@@ -57,7 +57,7 @@ export default {
 
 <template>
   <main>
-    <trashy-string :words="words"></trashy-string>
+    <TrashyString :words="words" />
   </main>
 </template>
 
