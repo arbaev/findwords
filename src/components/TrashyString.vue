@@ -24,8 +24,8 @@ export default {
       let selection = document.getSelection();
       let selectionText = selection.toString();
 
-      if (selectionText === "") return false;
-      if (selectionText === this.str) return false;
+      if (selectionText === "") return false; // исключаем клик без выделения
+      if (selectionText === this.str) return false; // исключаем выделение всей строки
 
       this.selections.push(selectionText);
 
