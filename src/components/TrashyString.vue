@@ -7,12 +7,38 @@ export default {
   data() {
     return {
       str: "",
+      selections: [],
     };
   },
   created() {
     this.str = this.strConstructor(this.words);
   },
   methods: {
+    mouseSelect(event) {
+      if (event.detail > 1) {
+        // исключаем влияение двойного и тройного клика
+        event.preventDefault();
+        return false;
+      }
+
+      let selection = document.getSelection();
+      let selectionText = selection.toString();
+
+      if (selectionText === "") return false;
+      if (selectionText === this.str) return false;
+
+      this.selections.push(selectionText);
+
+      const span = document.createElement("span");
+      span.textContent = selectionText;
+      span.className = "highlight_text";
+
+      let range = selection.getRangeAt(0);
+      document.getSelection().removeAllRanges(); // очистить текущее выделение, если оно существует
+      range.deleteContents();
+      range.insertNode(span);
+    },
+
     // TODO: выделить в хелпер?
     getRandomInt(min, max) {
       // Получение случайного целого числа в заданном интервале
@@ -75,5 +101,11 @@ export default {
 };
 </script>
 <template>
-  <h2>{{ str }}</h2>
+  <h2 @mouseup="mouseSelect($event)">{{ str }}</h2>
+  select: {{ selections }}
 </template>
+<style lang="scss">
+.highlight_text {
+  background-color: yellowgreen;
+}
+</style>
