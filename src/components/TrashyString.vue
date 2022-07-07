@@ -7,11 +7,13 @@ export default {
   data() {
     return {
       str: "",
+      wordsRanges: [],
       selections: [],
     };
   },
-  created() {
+  mounted() {
     this.str = this.strConstructor(this.words);
+    this.wordsRanges = this.setRanges(this.words);
   },
   methods: {
     mouseSelect(event) {
@@ -42,20 +44,118 @@ export default {
       this.selections = [];
     },
 
+    wordsUnion() {
+      let wordsArray = [...this.wordsRanges];
+
+      const checkSelections = this.selections.map((wr) => {
+        const [word, range] = wr;
+
+        let findy = wordsArray.filter;
+
+        if (wordsArray.includes(word)) {
+          const index = wordsArray.indexOf(word);
+          wordsArray.splice(index, 1);
+        }
+        return wr;
+      });
+
+      wordsArray.forEach((word) => {
+        //  найти и установить к слову range
+        const start = this.str.indexOf(word);
+        const end = start + word.length;
+        console.log(`from ${start} to ${end}`);
+        this.$refs.strNode.innerText = this.str;
+        const node = this.$refs.strNode;
+        let range = new Range();
+        range.setStart(node.firstChild, start);
+        range.setEnd(node.firstChild, end);
+        console.log(range);
+      });
+    },
+
+    setRanges(words) {
+      // устанавливает диапазоны словам
+      return words.map((word) => {
+        this.$refs.strNode.innerText = this.str; // хак с установкой кастомного поля
+        const nodeRef = this.$refs.strNode;
+
+        const start = this.str.indexOf(word);
+        const end = start + word.length;
+
+        let range = new Range();
+        range.setStart(nodeRef.firstChild, start);
+        range.setEnd(nodeRef.firstChild, end);
+
+        return [word, range];
+      });
+    },
+
     check() {
       if (this.selections.length === 0) return true;
       console.info("check");
 
-      this.words.forEach((w) => {
-        if (this.selections.includes(w)) {
-          this.highlight(w, "green");
+      // this.wordsUnion();
+      // let wds = Array.from(new Set([...this.words, ...this.selections]));
+      // console.log(wds);
+
+      let result = this.selections.forEach((item) => {
+        const [word, range] = item;
+        if (this.words.includes(word)) {
+          this.highlightRange(word, range, "green");
         } else {
-          this.highlight(w, "red");
+          this.highlightRange(word, range, "red");
         }
+        this.removeRange(item);
       });
+
+      this.wordsRanges.forEach((item) => {
+        const [word, range] = item;
+        this.highlightRange(word, range, "orange");
+      });
+
+      // let result = this.selections.reduce((acc, item) => {
+      //   const [word, range] = item;
+      //   if (this.words.includes(word)) {
+      //     this.highlightRange(word, range, "green");
+      //   } else {
+      //     this.highlightRange(word, range, "red");
+      //   }
+
+      //   // console.log(word);
+      //   // console.log(range);
+      //   return acc;
+      // }, this.str);
+
+      console.log(result);
+      // this.words.forEach((w) => {
+      //   if (this.selections.includes(w)) {
+      //     this.highlight(w, "green");
+      //   } else {
+      //     this.highlight(w, "red");
+      //   }
+      // });
     },
+
+    removeRange(item) {
+      // удаляет указанный объект item из массива объектов this.wordsRanges
+      const indexOfObject = this.wordsRanges.findIndex((i) => i[0] === item[0]);
+      if (indexOfObject > -1) {
+        this.wordsRanges.splice(indexOfObject, 1);
+      }
+    },
+
+    highlightRange(word, range, color) {
+      const span = document.createElement("span");
+      span.textContent = word;
+      span.className = "highlight_" + color;
+
+      range.deleteContents();
+      range.insertNode(span);
+    },
+
     highlight(word, color) {
       const node = this.$refs.strNode;
+      var text = node.childNodes[0];
       // node.innerText = this.str;
       const textNode = node.innerText;
 
@@ -67,8 +167,9 @@ export default {
       span.textContent = word;
       span.className = "highlight_" + color;
 
-      var txt2 = textNode.slice(0, start) + span + textNode.slice(end);
-      console.log(txt2);
+      node.insertBefore(span, text.splitText(start));
+
+      // console.log(txt2);
       // node.deleteContents();
       // node.insertNode(span);
     },
@@ -152,5 +253,8 @@ h2::selection {
 }
 .highlight_red {
   background-color: crimson;
+}
+.highlight_orange {
+  background-color: orange;
 }
 </style>
