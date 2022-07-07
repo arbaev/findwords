@@ -38,7 +38,10 @@ export default {
       range.deleteContents();
       range.insertNode(span);
     },
-
+    resetSelection() {
+      this.$refs.strNode.innerText = this.str;
+      this.selections = [];
+    },
     // TODO: выделить в хелпер?
     getRandomInt(min, max) {
       // Получение случайного целого числа в заданном интервале
@@ -101,10 +104,14 @@ export default {
 };
 </script>
 <template>
-  <h2 @mouseup="mouseSelect($event)">{{ str }}</h2>
+  <h2 @mouseup="mouseSelect($event)" ref="strNode">{{ str }}</h2>
+  <input type="button" value="reset" @click="resetSelection" />
   select: {{ selections }}
 </template>
 <style lang="scss">
+h2::selection {
+  background: yellowgreen;
+}
 .highlight_text {
   background-color: yellowgreen;
 }
