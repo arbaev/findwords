@@ -1,7 +1,7 @@
 <script>
 // TODO: генерация мусора по принципу согласная-гласная
 // TODO: Добавление символа впереди в отдельную функцию (если вообще оно надо)
-import { words } from "./assets/russian-simple-nouns";
+import { words as wordsAll } from "./assets/russian-simple-nouns";
 import TrashyString from "./components/TrashyString.vue";
 
 // TODO: вынести все настройки в отдельный файл
@@ -33,8 +33,8 @@ export default {
 
     spliceRandWord() {
       // возвращает случайное слово из массива слов, удаляя его в исходном массиве
-      let wordIndex = this.getRandomInt(0, words.length - 1);
-      return words.splice(wordIndex, 1)[0];
+      let wordIndex = this.getRandomInt(0, wordsAll.length - 1);
+      return wordsAll.splice(wordIndex, 1)[0];
     },
 
     // addFirstLetter(arr) {
@@ -51,13 +51,17 @@ export default {
       }
       return arr; // this.addFirstLetter(arr);
     },
+    checkSelection() {
+      this.$refs.trashyString.check();
+    },
   },
 };
 </script>
 
 <template>
   <main>
-    <TrashyString :words="words" />
+    <TrashyString :words="words" ref="trashyString" />
+    <input type="button" value="check" @click="checkSelection" />
   </main>
 </template>
 

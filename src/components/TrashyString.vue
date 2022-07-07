@@ -27,13 +27,12 @@ export default {
       if (selectionText === "") return false; // исключаем клик без выделения
       if (selectionText === this.str) return false; // исключаем выделение всей строки
 
-      this.selections.push(selectionText);
-
       const span = document.createElement("span");
       span.textContent = selectionText;
       span.className = "highlight_text";
 
       let range = selection.getRangeAt(0);
+      this.selections.push([selectionText, range]);
       document.getSelection().removeAllRanges(); // очистить текущее выделение, если оно существует
       range.deleteContents();
       range.insertNode(span);
@@ -42,6 +41,38 @@ export default {
       this.$refs.strNode.innerText = this.str;
       this.selections = [];
     },
+
+    check() {
+      if (this.selections.length === 0) return true;
+      console.info("check");
+
+      this.words.forEach((w) => {
+        if (this.selections.includes(w)) {
+          this.highlight(w, "green");
+        } else {
+          this.highlight(w, "red");
+        }
+      });
+    },
+    highlight(word, color) {
+      const node = this.$refs.strNode;
+      // node.innerText = this.str;
+      const textNode = node.innerText;
+
+      const start = textNode.indexOf(word);
+      const end = start + word.length;
+      console.log(`from ${start} to ${end}`);
+
+      const span = document.createElement("span");
+      span.textContent = word;
+      span.className = "highlight_" + color;
+
+      var txt2 = textNode.slice(0, start) + span + textNode.slice(end);
+      console.log(txt2);
+      // node.deleteContents();
+      // node.insertNode(span);
+    },
+
     // TODO: выделить в хелпер?
     getRandomInt(min, max) {
       // Получение случайного целого числа в заданном интервале
@@ -66,7 +97,8 @@ export default {
       return arr.reduce((acc, i) => (acc += i.length), 0);
     },
 
-    strConstructor(wordsArray) {
+    strConstructor(words) {
+      let wordsArray = [...words];
       // дополняет массив слов мусорными элементами и перемешивает его
       while (this.howManyLetters(wordsArray) < STR_LEN - 3) {
         // заполняем массив рандомом на 3 меньше нужной длины
@@ -110,9 +142,15 @@ export default {
 </template>
 <style lang="scss">
 h2::selection {
-  background: yellowgreen;
+  background: lightblue;
 }
 .highlight_text {
-  background-color: yellowgreen;
+  background-color: lightblue;
+}
+.highlight_green {
+  background-color: greenyellow;
+}
+.highlight_red {
+  background-color: crimson;
 }
 </style>
