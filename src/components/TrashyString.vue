@@ -7,15 +7,15 @@ export default {
   data() {
     return {
       str: "",
-      wordsRanges: [],
       selections: [],
     };
   },
-  mounted() {
+  created() {
     this.str = this.strConstructor(this.words);
-    this.wordsRanges = this.setRanges(this.words);
   },
   methods: {
+    // TODO: проблема с двойными-тройными кликами осталась
+    // TODO: при выделении строки целиком происходит чушь
     mouseSelect(event) {
       if (event.detail > 1) {
         // исключаем влияение двойного и тройного клика
@@ -39,139 +39,52 @@ export default {
       range.deleteContents();
       range.insertNode(span);
     },
+
     resetSelection() {
       this.$refs.strNode.innerText = this.str;
       this.selections = [];
     },
 
-    wordsUnion() {
-      let wordsArray = [...this.wordsRanges];
-
-      const checkSelections = this.selections.map((wr) => {
-        const [word, range] = wr;
-
-        let findy = wordsArray.filter;
-
-        if (wordsArray.includes(word)) {
-          const index = wordsArray.indexOf(word);
-          wordsArray.splice(index, 1);
-        }
-        return wr;
-      });
-
-      wordsArray.forEach((word) => {
-        //  найти и установить к слову range
-        const start = this.str.indexOf(word);
-        const end = start + word.length;
-        console.log(`from ${start} to ${end}`);
-        this.$refs.strNode.innerText = this.str;
-        const node = this.$refs.strNode;
-        let range = new Range();
-        range.setStart(node.firstChild, start);
-        range.setEnd(node.firstChild, end);
-        console.log(range);
-      });
-    },
-
-    setRanges(words) {
-      // устанавливает диапазоны словам
-      return words.map((word) => {
-        this.$refs.strNode.innerText = this.str; // хак с установкой кастомного поля
-        const nodeRef = this.$refs.strNode;
-
-        const start = this.str.indexOf(word);
-        const end = start + word.length;
-
-        let range = new Range();
-        range.setStart(nodeRef.firstChild, start);
-        range.setEnd(nodeRef.firstChild, end);
-
-        return [word, range];
-      });
-    },
-
     check() {
+      // запуск проверки действий пользователя, вызов при клике на кнопку
       if (this.selections.length === 0) return true;
-      console.info("check");
 
-      // this.wordsUnion();
-      // let wds = Array.from(new Set([...this.words, ...this.selections]));
-      // console.log(wds);
-
-      let result = this.selections.forEach((item) => {
-        const [word, range] = item;
-        if (this.words.includes(word)) {
-          this.highlightRange(word, range, "green");
-        } else {
-          this.highlightRange(word, range, "red");
-        }
-        this.removeRange(item);
-      });
-
-      this.wordsRanges.forEach((item) => {
-        const [word, range] = item;
-        this.highlightRange(word, range, "orange");
-      });
-
-      // let result = this.selections.reduce((acc, item) => {
-      //   const [word, range] = item;
-      //   if (this.words.includes(word)) {
-      //     this.highlightRange(word, range, "green");
-      //   } else {
-      //     this.highlightRange(word, range, "red");
-      //   }
-
-      //   // console.log(word);
-      //   // console.log(range);
-      //   return acc;
-      // }, this.str);
-
-      console.log(result);
-      // this.words.forEach((w) => {
-      //   if (this.selections.includes(w)) {
-      //     this.highlight(w, "green");
-      //   } else {
-      //     this.highlight(w, "red");
-      //   }
-      // });
+      this.stringHightlight();
     },
 
-    removeRange(item) {
-      // удаляет указанный объект item из массива объектов this.wordsRanges
-      const indexOfObject = this.wordsRanges.findIndex((i) => i[0] === item[0]);
-      if (indexOfObject > -1) {
-        this.wordsRanges.splice(indexOfObject, 1);
-      }
-    },
-
-    highlightRange(word, range, color) {
-      const span = document.createElement("span");
-      span.textContent = word;
-      span.className = "highlight_" + color;
-
-      range.deleteContents();
-      range.insertNode(span);
-    },
-
-    highlight(word, color) {
+    stringHightlight() {
+      // расставляет по строке span с классами для подсветки слов
+      // названия классов:
+      // highlight_correct для правильно выделенных слов
+      // highlight_wrong для неправильно выделенных слов
+      // highlight_omitted для пропущенных и невыделенных слов
       const node = this.$refs.strNode;
-      var text = node.childNodes[0];
-      // node.innerText = this.str;
-      const textNode = node.innerText;
+      let range = new Range();
+      range.selectNodeContents(node);
+      const children = range.commonAncestorContainer.children;
 
-      const start = textNode.indexOf(word);
-      const end = start + word.length;
-      console.log(`from ${start} to ${end}`);
+      let wordsArray = [...this.words];
 
-      const span = document.createElement("span");
-      span.textContent = word;
-      span.className = "highlight_" + color;
+      // сначала обрабатываем селекты юзера
+      for (let element of children) {
+        if (wordsArray.includes(element.innerText)) {
+          element.className = "highlight_correct";
 
-      node.insertBefore(span, text.splitText(start));
+          const index = wordsArray.indexOf(element.innerText);
+          wordsArray.splice(index, 1);
+        } else {
+          element.className = "highlight_wrong";
+        }
+      }
 
-      // console.log(txt2);
-      // node.deleteContents();
-      // node.insertNode(span);
+      // затем обрабатываем пропущенные юзером слова
+      wordsArray.forEach((word) => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.className = "highlight_omitted";
+
+        node.innerHTML = node.innerHTML.replace(word, span.outerHTML);
+      });
     },
 
     // TODO: выделить в хелпер?
@@ -199,6 +112,7 @@ export default {
     },
 
     strConstructor(words) {
+      // конструктор строки со словами и мусорными буквами
       let wordsArray = [...words];
       // дополняет массив слов мусорными элементами и перемешивает его
       while (this.howManyLetters(wordsArray) < STR_LEN - 3) {
@@ -213,8 +127,7 @@ export default {
       }
 
       const wordsArrayRandom = this.shuffle(wordsArray);
-      const ws = this.arrToString(wordsArrayRandom);
-      return ws;
+      return this.arrToString(wordsArrayRandom);
     },
 
     shuffle(arr) {
@@ -236,11 +149,13 @@ export default {
   },
 };
 </script>
+
 <template>
   <h2 @mouseup="mouseSelect($event)" ref="strNode">{{ str }}</h2>
   <input type="button" value="reset" @click="resetSelection" />
   select: {{ selections }}
 </template>
+
 <style lang="scss">
 h2::selection {
   background: lightblue;
@@ -248,13 +163,13 @@ h2::selection {
 .highlight_text {
   background-color: lightblue;
 }
-.highlight_green {
+.highlight_correct {
   background-color: greenyellow;
 }
-.highlight_red {
+.highlight_wrong {
   background-color: crimson;
 }
-.highlight_orange {
+.highlight_omitted {
   background-color: orange;
 }
 </style>
