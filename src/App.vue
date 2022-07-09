@@ -66,7 +66,5 @@ export default {
 </template>
 
 <style>
-h2 {
-  text-align: center;
-}
+@import "bulma/css/bulma.css";
 </style>
