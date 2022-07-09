@@ -16,6 +16,7 @@ export default {
   methods: {
     // TODO: проблема с двойными-тройными кликами осталась
     // TODO: при выделении строки целиком происходит чушь
+    // TODO: после нажатия Проверить — дизаблить сброс выделения
     mouseSelect(event) {
       if (event.detail > 1) {
         // исключаем влияение двойного и тройного клика
@@ -151,9 +152,27 @@ export default {
 </script>
 
 <template>
-  <h2 @mouseup="mouseSelect($event)" ref="strNode">{{ str }}</h2>
-  <input type="button" value="reset" @click="resetSelection" />
-  select: {{ selections }}
+  <section class="">
+    <div class="columns is-centered">
+      <div class="column is-narrow">
+        <p
+          @mouseup="mouseSelect($event)"
+          ref="strNode"
+          class="title is-family-monospace is-size-3 has-text-centered"
+        >
+          {{ str }}
+        </p>
+      </div>
+      <div class="column is-1">
+        <button @click="resetSelection" class="button is-white">
+          <span class="icon">
+            <ion-icon name="close-outline" class="delete-button"></ion-icon>
+          </span>
+        </button>
+      </div>
+    </div>
+    select: {{ selections }}
+  </section>
 </template>
 
 <style lang="scss">
@@ -171,5 +190,8 @@ h2::selection {
 }
 .highlight_omitted {
   background-color: orange;
+}
+.delete-button {
+  color: crimson;
 }
 </style>

@@ -61,7 +61,13 @@ export default {
 <template>
   <main>
     <TrashyString :words="words" ref="trashyString" />
-    <input type="button" value="check" @click="checkSelection" />
+
+    <button @click="checkSelection" class="button is-info">
+      <span class="icon">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+      </span>
+      <span>Проверить</span>
+    </button>
   </main>
 </template>
 
