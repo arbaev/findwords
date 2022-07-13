@@ -63,9 +63,7 @@ export default {
     <TrashyString :words="words" ref="trashyString" />
 
     <button @click="checkSelection" class="button is-info">
-      <span class="icon">
-        <ion-icon name="checkmark-done-outline"></ion-icon>
-      </span>
+      <span class="icon"> <i class="fa-solid fa-clipboard-check"></i> </span>
       <span>Проверить</span>
     </button>
   </main>

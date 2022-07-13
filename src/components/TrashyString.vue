@@ -166,7 +166,7 @@ export default {
       <div class="column is-1">
         <button @click="resetSelection" class="button is-white">
           <span class="icon">
-            <ion-icon name="close-outline" class="delete-button"></ion-icon>
+            <i class="fa-solid fa-xmark delete-button"></i>
           </span>
         </button>
       </div>
