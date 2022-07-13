@@ -14,21 +14,16 @@ export default {
     this.str = this.strConstructor(this.words);
   },
   methods: {
-    // TODO: проблема с двойными-тройными кликами осталась
-    // TODO: при выделении строки целиком происходит чушь
     // TODO: после нажатия Проверить — дизаблить сброс выделения
+    // TODO: запускать таймер в начале игры и в конце выводить коэф внимательности и скорости
     mouseSelect(event) {
-      if (event.detail > 1) {
-        // исключаем влияение двойного и тройного клика
-        event.preventDefault();
-        return false;
-      }
-
       let selection = document.getSelection();
       let selectionText = selection.toString();
 
+      if (event.detail > 1) return false; // исключаем влияение двойного и тройного клика
       if (selectionText === "") return false; // исключаем клик без выделения
-      if (selectionText === this.str) return false; // исключаем выделение всей строки
+      if (selectionText.trim() === this.str) return false; // исключаем выделение всей строки
+      if (!this.str.includes(selectionText.trim())) return false; // исключаем выделение других строк или элементов
 
       const span = document.createElement("span");
       span.textContent = selectionText;
@@ -41,6 +36,7 @@ export default {
       range.insertNode(span);
     },
 
+    // TODO: корректно удалять выделение при селекшене нескольких строк или других элементов
     resetSelection() {
       this.$refs.strNode.innerText = this.str;
       this.selections = [];
@@ -48,7 +44,7 @@ export default {
 
     check() {
       // запуск проверки действий пользователя, вызов при клике на кнопку
-      if (this.selections.length === 0) return true;
+      if (this.selections.length === 0) return false;
 
       this.stringHightlight();
     },
