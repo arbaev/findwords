@@ -2,7 +2,7 @@
 const STR_LEN = 40; // длина строки
 
 export default {
-  name: "TrashyString",
+  name: "FindWordsString",
   props: ["words"],
   data() {
     return {
