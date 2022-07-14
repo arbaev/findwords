@@ -2,7 +2,7 @@
 // TODO: генерация мусора по принципу согласная-гласная
 // TODO: Добавление символа впереди в отдельную функцию (если вообще оно надо)
 import { words as wordsAll } from "./assets/russian-simple-nouns";
-import TrashyString from "./components/TrashyString.vue";
+import FindWordsString from "./components/FindWordsString.vue";
 
 // TODO: вынести все настройки в отдельный файл
 const WORDS_MIN = 1; // мин количество слов в строке
@@ -17,7 +17,7 @@ export default {
     };
   },
   components: {
-    TrashyString,
+    FindWordsString,
   },
   created() {
     this.words = this.getRandWordsArray();
@@ -52,7 +52,7 @@ export default {
       return arr; // this.addFirstLetter(arr);
     },
     checkSelection() {
-      this.$refs.trashyString.check();
+      this.$refs.FindWordsString.check();
     },
   },
 };
@@ -60,7 +60,7 @@ export default {
 
 <template>
   <main>
-    <TrashyString :words="words" ref="trashyString" />
+    <FindWordsString :words="words" ref="FindWordsString" />
 
     <button @click="checkSelection" class="button is-info">
       <span class="icon"> <i class="fa-solid fa-clipboard-check"></i> </span>
