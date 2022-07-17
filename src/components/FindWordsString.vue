@@ -1,16 +1,22 @@
 <script>
+import { words as wordsAll } from "../assets/russian-simple-nouns";
+
+const WORDS_MIN = 1; // мин количество слов в строке
+const WORDS_MAX = 4; // макс количество слов в строке
 const STR_LEN = 40; // длина строки
 
 export default {
   name: "FindWordsString",
-  props: ["words"],
   data() {
     return {
+      wordsQuantity: this.getRandomInt(WORDS_MIN, WORDS_MAX),
+      words: [],
       str: "",
       selections: [],
     };
   },
   created() {
+    this.words = this.getRandWordsArray();
     this.str = this.strConstructor(this.words);
   },
   methods: {
@@ -142,6 +148,25 @@ export default {
     arrToString(arr) {
       // конвертирует массив строк в строку
       return arr.reduce((acc, item) => (acc = acc + item), "");
+    },
+
+    spliceRandWord() {
+      // возвращает случайное слово из массива слов, удаляя его в исходном массиве
+      let wordIndex = this.getRandomInt(0, wordsAll.length - 1);
+      return wordsAll.splice(wordIndex, 1)[0];
+    },
+
+    getRandWordsArray() {
+      // возвращает массив выбранных слов
+      let arr = [];
+
+      for (let k = 0; k < this.wordsQuantity; k++) {
+        arr.push(this.spliceRandWord()); //.toUpperCase());
+      }
+      return arr; // this.addFirstLetter(arr);
+    },
+    checkSelection() {
+      this.$refs.FindWordsString.check();
     },
   },
 };
