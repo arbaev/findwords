@@ -109,6 +109,11 @@ export default {
       return str;
     },
 
+    // addFirstLetter(arr) {
+    //   // добавляет первую случайную букву к каждому элементу массива
+    //   return arr.map((item) => this.randomString(1) + item);
+    // },
+
     howManyLetters(arr) {
       // суммирует количество букв в массиве строк
       return arr.reduce((acc, i) => (acc += i.length), 0);

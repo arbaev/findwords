@@ -16,18 +16,7 @@ export default {
   components: {
     FindWordsString,
   },
-  methods: {
-    // getRandomInt(min, max) {
-    //   // Получение случайного целого числа в заданном интервале
-    //   min = Math.ceil(min);
-    //   max = Math.floor(max);
-    //   return Math.floor(Math.random() * (max - min + 1)) + min;
-    // },
-    // addFirstLetter(arr) {
-    //   // добавляет первую случайную букву к каждому элементу массива
-    //   return arr.map((item) => this.randomString(1) + item);
-    // },
-  },
+  methods: {},
 };
 </script>
 
